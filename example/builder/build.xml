@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="builder">
+
+    <import file="build-common.xml" />
+
+    <target depends="init.properties" name="clean">
+        <delete dir="${builder.target}" includeemptydirs="true" />
+    </target>
+    
+    <target depends="clean, init" name="all" />
+</project>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <!-- Init -->
+    <target name="init.properties">
+        <property file="${basedir}/librairies.properties" />
+        <property file="${basedir}/build.properties" />
+
+        <property name="builder.basedir" value="${base.dir}/builder" />
+        <property name="builder.target" value="${builder.basedir}/${out.dir}" />
+    </target>
+
+    <target depends="init.properties" name="init-folder">
+        <mkdir dir="${builder.target}" />
+    </target>
+
+    <target depends="init-folder" name="init">
+        <!-- AntContrib librairy import -->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath>
+                <pathelement location="${base.dir}/builder/misc/ant-contrib.jar" />
+            </classpath>
+        </taskdef>
+
+        <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" onerror="ignore">
+            <classpath>
+                <pathelement location="${base.dir}/builder/misc/ant-contrib.jar" />
+            </classpath>
+        </taskdef>
+
+        <taskdef resource="com/mpi/ant/buildorder/antbuildorder.properties">
+            <classpath>
+                <pathelement location="${base.dir}/builder/misc/ant-buildorder.jar" />
+            </classpath>
+        </taskdef>
+
+        <buildOrder property="build-order" dependenciesfilename="librairies.properties" separator=" " basedir="${base.dir}" />
+        <dependencyTree dependenciesfilename="librairies.properties" basedir="${base.dir}" />
+    </target>
+</project>
