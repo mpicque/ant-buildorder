@@ -84,19 +84,19 @@ public class DependencyTree implements Cloneable {
         return clone;
     }
 
-    public String toDependencyList(String separator) throws BuildException {
+    public List<String> toDependencyList() throws BuildException {
         if (!isLine()) {
             throw new BuildException("Invalid build dependencies");
         }
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(leafs.get(0).name);
+        List<String> dependencyList = new ArrayList<String>();
+
+        dependencyList.add(leafs.get(0).name);
         if (!leafs.get(0).isLeaf()) {
-            sb.append(separator);
-            sb.append(leafs.get(0).toDependencyList(separator));
+            dependencyList.addAll(leafs.get(0).toDependencyList());
         }
 
-        return sb.toString();
+        return dependencyList;
     }
 
     public boolean isLine() {
