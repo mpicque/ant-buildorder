@@ -23,7 +23,12 @@ public abstract class AbstractDependencyLoaderTask extends Task {
      * the base directory of all projects.
      */
     protected File baseDir;
-
+    
+    /**
+     * parent project, used to initialize the first dependency file if not found in the exec. directory
+     */
+    protected String parentProject = "builder";
+    
     public void setDependenciesFileName(String dependenciesFileName) {
         this.dependenciesFileName = dependenciesFileName;
     }
@@ -31,18 +36,18 @@ public abstract class AbstractDependencyLoaderTask extends Task {
     public void setBaseDir(File baseDir) {
         this.baseDir = baseDir;
     }
+    
+    public void setParentProject(String parentProject) {
+    	this.parentProject = parentProject;
+    }
 
     public DependencyTree loadDependencyTree() throws BuildException {
-        checkProperties();
-
-        DependencyTree tree;
         try {
-            tree = DependencyTreeFactory.createDependencyTree(getProject().getName(), baseDir, dependenciesFileName);
+            return DependencyTreeFactory.createDependencyTree(getProject().getName(), baseDir, dependenciesFileName, 
+                    parentProject);
         } catch (IOException e) {
             throw new BuildException("Unable to build dependency tree", e);
         }
-
-        return tree;
     }
 
     protected void checkProperties() throws BuildException {
@@ -50,13 +55,8 @@ public abstract class AbstractDependencyLoaderTask extends Task {
             throw new BuildException("attribute dependenciesfilename must be set");
         }
 
-        File dependenciesFile = new File(dependenciesFileName);
-        if (!dependenciesFile.exists() || !dependenciesFile.isFile()) {
-            throw new BuildException("file " + dependenciesFileName + " does not exists");
-        }
-
         if (baseDir == null) {
-            throw new BuildException("attribute basrdir must be set");
+            throw new BuildException("attribute basedir must be set");
         }
 
         if (!baseDir.exists() || !baseDir.isDirectory()) {
