@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tools.ant.BuildException;
+
 /**
  * AntBuildOrderResolver - class com.jcdecaux.ant.tasks.DependenciesTreeFactory. date : Jul 8, 2010
  */
@@ -20,11 +22,15 @@ public class DependencyTreeFactory {
         super();
     }
 
-    public static DependencyTree createDependencyTree(String projectName, File baseDir, String dependenciesFileName)
+    public static DependencyTree createDependencyTree(String projectName, File baseDir, String dependenciesFileName, String parentProject)
             throws IOException {
         DependencyTree tree = new DependencyTree(projectName);
+        File parentDepFile = new File(dependenciesFileName);
+        if (!parentDepFile.exists() || !parentDepFile.isFile()) {
+            parentDepFile = new File(new File(baseDir, parentProject), dependenciesFileName);
+        }
 
-        new DependencyTreeFactory().loadDependency(tree, baseDir, dependenciesFileName, new File(dependenciesFileName));
+        new DependencyTreeFactory().loadDependency(tree, baseDir, dependenciesFileName, parentDepFile);
 
         return tree;
     }
@@ -50,6 +56,10 @@ public class DependencyTreeFactory {
     private static List<String> readFile(File dependenciesFile) throws IOException {
         List<String> result = new ArrayList<String>();
 
+        if (!dependenciesFile.exists() || !dependenciesFile.isFile()) {
+            throw new BuildException("file " + dependenciesFile.getAbsolutePath() + " does not exists");
+        }
+        
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(dependenciesFile));
